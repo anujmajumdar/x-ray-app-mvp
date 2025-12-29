@@ -1,6 +1,7 @@
 X-Ray: Decision Observability SDK & Dashboard
 
 X-Ray is a lightweight observability tool designed for non-deterministic software pipelines (LLMs, heuristic filters, and complex ranking algorithms). While traditional logging tracks execution flow, X-Ray tracks reasoning flow.
+
 🚀 Quick Start
 1. Prerequisites
 
