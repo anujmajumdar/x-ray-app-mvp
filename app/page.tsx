@@ -19,6 +19,42 @@ export default function Dashboard() {
     }
   };
 
+  const exportErrorLogs = async (format: 'csv' | 'json') => {
+    try {
+      const response = await fetch(`/api/export-errors?format=${format}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (format === 'csv') {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `error-logs-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } else {
+        const data = await response.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `error-logs-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error: any) {
+      console.error('Error exporting error logs:', error);
+      alert(`Error exporting logs: ${error.message || 'Failed to export'}`);
+    }
+  };
+
   const triggerDemo = async (mode: 'all' | 'random' = 'all') => {
     setIsRunning(true);
     try {
@@ -84,6 +120,22 @@ export default function Dashboard() {
             >
               {isRunning ? 'Running All Test Cases...' : 'Run All (20 cases)'}
             </button>
+            <div className="border-l border-gray-300 pl-3 flex gap-2">
+              <button 
+                onClick={() => exportErrorLogs('csv')}
+                className="bg-orange-600 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-orange-700 transition text-sm"
+                title="Export error logs as CSV"
+              >
+                Export Errors (CSV)
+              </button>
+              <button 
+                onClick={() => exportErrorLogs('json')}
+                className="bg-purple-600 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-purple-700 transition text-sm"
+                title="Export error logs as JSON"
+              >
+                Export Errors (JSON)
+              </button>
+            </div>
           </div>
         </header>
 
