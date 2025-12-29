@@ -13,8 +13,8 @@
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
-cd xray-assignment
+git clone https://github.com/anujmajumdar/x-ray-app-mvp
+cd x-ray-app-mvp
 
 # Install dependencies
 npm install
