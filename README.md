@@ -77,3 +77,6 @@ I implemented a shared memory storage strategy that works across both Server and
 * **Diffing Tool**: A side-by-side comparison view to see why two similar inputs produced different outputs.
 
 ---
+### Architecture for Scaling for real life use case
+
+<img width="798" height="464" alt="Screenshot 2025-12-29 at 10 05 24 PM" src="https://github.com/user-attachments/assets/66af6262-bfae-48c9-9e39-d20ccd0e1057" />
