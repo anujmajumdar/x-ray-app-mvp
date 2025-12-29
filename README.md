@@ -1,17 +1,17 @@
-X-Ray: Decision Observability SDK & Dashboard
+# X-Ray: Decision-Centric Observability SDK
 
-X-Ray is a lightweight observability tool designed for non-deterministic software pipelines (LLMs, heuristic filters, and complex ranking algorithms). While traditional logging tracks execution flow, X-Ray tracks reasoning flow.
+**X-Ray** is a lightweight, domain-agnostic observability framework designed to solve the "Black Box" problem in non-deterministic pipelines. While traditional logs tell you *what* the system did, X-Ray tells you **why** it did it.
 
-🚀 Quick Start
-1. Prerequisites
+## 🚀 Setup Instructions
 
-    Node.js 18.x or higher
+### 1. Prerequisites
 
-    npm or yarn
+* **Node.js**: 18.x or later
+* **npm/yarn**: Standard package managers
 
-2. Installation
-Bash
+### 2. Quick Start
 
+```bash
 # Clone the repository
 git clone <your-repo-url>
 cd xray-assignment
@@ -19,61 +19,61 @@ cd xray-assignment
 # Install dependencies
 npm install
 
-3. Run Development Server
-Bash
-
+# Start the development server
 npm run dev
 
-Open http://localhost:3000 to view the dashboard. Click "Run Demo Workflow" to trigger the multi-category test suite including success and failure scenarios.
-💡 Technical Approach
-1. The "Step" Abstraction (lib/xray-sdk.ts)
+```
 
-The SDK treats every logic block as a "Step." By wrapping code in xray.step(), the developer gets:
+### 3. Usage
 
-    Automatic Error Boundary: If a step throws an error (e.g., API timeout), the SDK catches it, marks the trace as failed, and captures the error message in the output context without crashing the parent process.
+1. **View the Dashboard**: Navigate to [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000).
+2. **Run the Demo**: Click **"Run Demo Workflow"** to execute the test suite. This triggers several categories (Water Bottles, Laptops, etc.) with simulated success and failure states.
 
-    Reasoning Capture: A dedicated logReasoning channel for "Chain of Thought" logging.
+---
 
-    The Decision Matrix: A logEval method specifically for filtering/ranking, allowing the UI to render why specific items were kept or dropped.
+## 💡 Technical Approach
 
-2. Multi-Step Demo Architecture (lib/demo-workflows.ts)
+### 1. The "Step" Abstraction (`lib/xray-sdk.ts`)
 
-The demo mimics a real-world Amazon Competitor Selection tool across 5 distinct phases:
+The core of the SDK is the `.step()` method. This wraps business logic in a managed execution block that handles:
 
-    Keyword Gen: LLM-based entity extraction.
+* **Error Boundaries**: Captures failures (timeouts, API errors) at the step level, marking the trace as `failed` while preserving all context gathered up to that point.
+* **Reasoning Injection**: Provides a dedicated channel for "Internal Reasoning" strings, perfect for capturing LLM Chain-of-Thought or complex heuristic justifications.
+* **Decision Matrix**: An `evaluations` array that logs the fate of every candidate item (e.g., "Why was this product dropped?").
 
-    Search API: Mocked retrieval.
+### 2. Multi-Category Test Suite (`lib/demo-test-cases.ts`)
 
-    Business Filters: Hard-coded logic (Price, Ratings, Reviews).
+To demonstrate the "General Purpose" nature of the library, the demo includes:
 
-    LLM Relevance: Semantic check to eliminate "False Positives" (e.g., a bottle brush appearing in a search for bottles).
+* **Diverse Domains**: Water Bottles, Laptops, Headphones, Smart Watches, and Keyboards.
+* **Simulated Failure States**: Specific cases are hardwired to fail at different stages (e.g., LLM timeout at Step 1 vs. Filter elimination at Step 3).
+* **Sophisticated Ranking**: A 5-step pipeline including Keyword Gen, Mock API Search, Heuristic Filtering, LLM Relevance Scoring, and Weighted Composite Ranking.
 
-    Composite Ranking: Weighted scoring (40% Relevance, 30% Popularity, etc.).
+### 3. Isomorphic Data Persistence (`lib/storage.ts`)
 
-3. Smart Persistence (lib/storage.ts)
+I implemented a shared memory storage strategy that works across both Server and Client components in Next.js. This ensures that traces generated via Server Actions or API routes are immediately visible in the Dashboard without requiring an external database setup.
 
-To ensure zero-config for the reviewer, I implemented a Shared Memory Store. The SDK is "Isomorphic"—it detects if it's running on the server (writing directly to memory) or the client (using the Ingest API), preventing data loss across environment boundaries.
-🔍 Key Features
+---
 
-    Failure Diagnostics: The UI highlights failed steps in red and displays the specific error message (e.g., "API Rate Limit Exceeded").
+## 🔍 Dashboard Features
 
-    The "Why" Table: The dashboard doesn't just show a list of products; it shows a table of every candidate that was dropped and the specific business rule that killed it.
+* **Failure Visualization**: Failed steps are highlighted in red with explicit error messages.
+* **Funnel Analysis**: Visualizes the "Decision Matrix," making it easy to see which specific business rule (Price, Rating, or Popularity) caused a candidate to be eliminated.
+* **Semantic Scoring**: Displays LLM-generated relevance scores, moving beyond simple keyword matching to show true intent.
 
-    Semantic Scoring: Visualizes the "hidden" scores generated by LLM relevance evaluations.
+---
 
-🚧 Known Limitations & Future Improvements
-Current Limitations
+## 🚧 Known Limitations & Future Improvements
 
-    Ephemeral Storage: Traces are stored in RAM and will clear when the Next.js dev server restarts.
+### Current Limitations
 
-    Linear Execution: The current SDK/UI supports sequential steps but does not yet visualize parallel Promise.all execution paths.
+* **Volatility**: Traces are stored in-memory; restarting the development server will clear the history.
+* **Linearity**: The SDK currently visualizes sequential steps; it does not yet represent parallel branching logic (e.g., `Promise.all` scenarios).
 
-    Mocked Services: All external calls (LLM, API) are simulated to ensure the demo is 100% reliable for review.
+### Future Improvements
 
-Future Roadmap
+* **Persistent Storage**: Migration to a Postgres/JSONB backend to allow for historical trend analysis.
+* **Replay & Debug**: Adding a "Re-run Step" button that allows developers to tweak logic (like price thresholds) and re-execute a step using the exact cached input.
+* **Diffing Tool**: A side-by-side comparison view to see why two similar inputs produced different outputs.
 
-    Persistence: Replace lib/storage.ts with a Postgres JSONB column to allow for SQL querying of decision patterns.
-
-    Replay Engine: Add the ability to "Re-run from this step" using the captured input to test logic changes (e.g., adjusting a price threshold) without re-fetching all data.
-
-    Regression Testing: Use captured X-Ray traces as "Gold Data" sets to ensure future logic changes don't accidentally drop valid competitors.
+---
