@@ -27,7 +27,7 @@ npm run dev
 ### 3. Usage
 
 1. **View the Dashboard**: Navigate to [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000).
-2. **Run the Demo**: Click **"Run Demo Workflow"** to execute the test suite. This triggers several categories (Water Bottles, Laptops, etc.) with simulated success and failure states.
+2. **Run the Demo**: Click **"Run Random or Run All"** to execute the test suite. This triggers several categories (Water Bottles, Laptops, etc.) with simulated success and failure states.
 
 ---
 
