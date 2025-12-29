@@ -1,5 +1,6 @@
 import { XRayClient } from "./xray-sdk";
-import { ProductCategory, TestCase } from "./demo-test-cases";
+import { TestCase } from "./data/test-cases";
+import { ProductCategory } from "./data-helpers";
 
 export async function runCompetitorSelection(
   prospect: TestCase,

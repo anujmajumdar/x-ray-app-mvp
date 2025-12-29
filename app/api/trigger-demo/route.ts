@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
 import { runCompetitorSelection } from '@/lib/demo-workflow';
-import { demoTestCases } from '@/lib/demo-test-cases';
+import { buildAllCategories } from '@/lib/server-data-helpers';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const { categoryIndex, testCaseIndex, mode } = body;
     
+    // Fetch categories and test cases from data storage
+    const allCategories = buildAllCategories();
+    
     // If specific category and test case are provided, run only that one
     if (typeof categoryIndex === 'number' && typeof testCaseIndex === 'number') {
-      const category = demoTestCases[categoryIndex];
+      const category = allCategories[categoryIndex];
       if (!category || !category.testCases[testCaseIndex]) {
         return NextResponse.json(
           { success: false, error: 'Invalid category or test case index' },
@@ -29,9 +32,9 @@ export async function POST(req: Request) {
     }
     
     // Collect all test cases
-    const allTestCases: Array<{ category: typeof demoTestCases[0], testCase: typeof demoTestCases[0]['testCases'][0] }> = [];
-    for (let catIdx = 0; catIdx < demoTestCases.length; catIdx++) {
-      const category = demoTestCases[catIdx];
+    const allTestCases: Array<{ category: typeof allCategories[0], testCase: typeof allCategories[0]['testCases'][0] }> = [];
+    for (let catIdx = 0; catIdx < allCategories.length; catIdx++) {
+      const category = allCategories[catIdx];
       for (let testIdx = 0; testIdx < category.testCases.length; testIdx++) {
         allTestCases.push({ category, testCase: category.testCases[testIdx] });
       }
